@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"go-mongo-sync/utils"
+	"github.com/timezstyle/go-mongo-sync/utils"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"

@@ -5,6 +5,10 @@ MongoDB数据同步工具，支持实时同步。
 oplog并发回放机制，提高回放oplog的效率，即使在源端写操作频繁的情况下也能保证实时同步。
 目前仅支持一个MongoDB复制集的全量数据同步。
 
+```
+go get github.com/timezstyle/go-mongo-sync
+```
+
 ## 用法
 
     # ./go-mongo-sync --help

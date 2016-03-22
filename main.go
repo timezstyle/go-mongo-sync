@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"go-mongo-sync/sync"
+	"github.com/timezstyle/go-mongo-sync/sync"
 )
 
 func main() {
