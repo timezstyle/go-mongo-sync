@@ -130,7 +130,7 @@ func (p *Synchronizer) syncDatabase(dbname string) error {
 
 		// sync documents
 		n := 0
-		c := make(chan bool, 20) // 20 concurrent goroutines
+		c := make(chan bool, p.config.GoroutineNumber) // 20 concurrent goroutines
 		cursor := coll.Find(nil).Snapshot().Iter()
 		for {
 			var doc bson.M

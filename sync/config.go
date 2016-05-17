@@ -10,16 +10,17 @@ import (
 
 // Config implemention that parse from command arguments.
 type Config struct {
-	From        string
-	To          string
-	Database    string
-	Query       string
-	Log         string
-	StartOptime int
-	SrcHost     string
-	SrcPort     int
-	DstHost     string
-	DstPort     int
+	GoroutineNumber int
+	From            string
+	To              string
+	Database        string
+	Query           string
+	Log             string
+	StartOptime     int
+	SrcHost         string
+	SrcPort         int
+	DstHost         string
+	DstPort         int
 }
 
 // load and parse command-line flags
@@ -27,6 +28,7 @@ func (p *Config) Load() error {
 	flag.StringVar(&p.From, "from", "", "source, should be a member of replica-set")
 	flag.StringVar(&p.To, "to", "", "destination, should be a mongos or mongod instance")
 	flag.StringVar(&p.Database, "db", "", "database to sync")
+	flag.IntVar(&p.GoroutineNumber, "c", 2000, "goroutine number")
 	flag.Parse()
 	if err := p.validate(); err != nil {
 		return err
