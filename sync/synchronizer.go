@@ -6,6 +6,8 @@ package sync
 import (
 	"errors"
 	"fmt"
+	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -63,8 +65,17 @@ func NewSynchronizer(config Config) *Synchronizer {
 }
 
 func (p *Synchronizer) Run() error {
-	if err := p.initialSync(); err != nil {
-		return err
+	MONGO_SYNC_OPTIME := os.Getenv("MONGO_SYNC_OPTIME")
+	if MONGO_SYNC_OPTIME == "" {
+		if err := p.initialSync(); err != nil {
+			return err
+		}
+	} else {
+		i, err := strconv.Atoi(MONGO_SYNC_OPTIME)
+		if err != nil {
+			panic(err)
+		}
+		p.optime = bson.MongoTimestamp(i)
 	}
 	if err := p.oplogSync(); err != nil {
 		return err
