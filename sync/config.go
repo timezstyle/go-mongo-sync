@@ -28,7 +28,7 @@ func (p *Config) Load() error {
 	flag.StringVar(&p.From, "from", "", "source, should be a member of replica-set")
 	flag.StringVar(&p.To, "to", "", "destination, should be a mongos or mongod instance")
 	flag.StringVar(&p.Database, "db", "", "database to sync")
-	flag.IntVar(&p.GoroutineNumber, "c", 2000, "goroutine number")
+	flag.IntVar(&p.GoroutineNumber, "c", 20, "goroutine number")
 	flag.Parse()
 	if err := p.validate(); err != nil {
 		return err

@@ -3,6 +3,7 @@ package sync
 import (
 	"fmt"
 	"hash/crc32"
+	"os"
 	"sync"
 	"time"
 
@@ -205,6 +206,7 @@ func (p *OplogReplayer) Run() error {
 				//fmt.Println("done", optime)
 				p.optime = optime
 				fmt.Println(time.Now(), n, utils.GetTimeFromOptime(p.optime), utils.GetTimestampFromOptime(p.optime))
+				os.Setenv("MONGO_SYNC_OPTIME", p.optime)
 			}
 		}
 	}

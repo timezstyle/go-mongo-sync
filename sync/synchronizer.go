@@ -157,7 +157,7 @@ func (p *Synchronizer) syncDatabase(dbname string) error {
 func (p *Synchronizer) write_document(dbname string, collname string, doc bson.M, c chan bool) error {
 	// TODO failover
 	defer func() { <-c }()
-	if _, err := p.dstSession.DB(dbname).C(collname).UpsertId(doc["_id"], doc); err != nil {
+	if _, err := p.dstSession.Clone().DB(dbname).C(collname).UpsertId(doc["_id"], doc); err != nil {
 		fmt.Println("write document:", err)
 		return err
 	}
