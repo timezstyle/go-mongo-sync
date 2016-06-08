@@ -6,8 +6,6 @@ package sync
 import (
 	"errors"
 	"fmt"
-	"os"
-	"strconv"
 	"strings"
 	"time"
 
