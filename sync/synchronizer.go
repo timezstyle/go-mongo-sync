@@ -68,7 +68,8 @@ func (p *Synchronizer) Run() error {
 			return err
 		}
 	} else {
-		p.optime = bson.MongoTimestamp(p.config.StartOptime)
+		p.optime = bson.MongoTimestamp(int64(p.config.StartOptime) << 32)
+		//p.optime = bson.MongoTimestamp(p.config.StartOptime)
 	}
 	if err := p.oplogSync(); err != nil {
 		return err
