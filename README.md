@@ -16,3 +16,6 @@ go get github.com/timezstyle/go-mongo-sync
       -db="": database to sync
       -from="": source, should be a member of replica-set
       -to="": destination, should be a mongos or mongod instance
+
+
+GOOS=linux GOARCH=amd64 go build -o go_mongo_sync.linux64.bin main.go

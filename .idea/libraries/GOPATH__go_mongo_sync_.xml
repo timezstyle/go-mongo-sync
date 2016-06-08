@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="GOPATH &lt;go-mongo-sync&gt;">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../tunnel_api/src/gopkg.in" />
+      <root url="file://$PROJECT_DIR$/../tunnel_api/src/qnap" />
+      <root url="file://$PROJECT_DIR$/../tunnel_api/src/9fans.net" />
+      <root url="file://$PROJECT_DIR$/../tunnel_api/src/golang.org" />
+      <root url="file://$PROJECT_DIR$/../tunnel_api/src/github.com" />
+    </CLASSES>
+    <SOURCES />
+    <excluded>
+      <root url="file://$PROJECT_DIR$" />
+    </excluded>
+  </library>
+</component>
