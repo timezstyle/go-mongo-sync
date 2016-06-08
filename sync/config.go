@@ -29,6 +29,7 @@ func (p *Config) Load() error {
 	flag.StringVar(&p.To, "to", "", "destination, should be a mongos or mongod instance")
 	flag.StringVar(&p.Database, "db", "", "database to sync")
 	flag.IntVar(&p.GoroutineNumber, "c", 20, "goroutine number")
+	flag.IntVar(&p.StartOptime, "start_optime", -1, "start optime, -1 means no specify.")
 	flag.Parse()
 	if err := p.validate(); err != nil {
 		return err

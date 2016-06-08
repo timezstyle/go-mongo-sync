@@ -65,17 +65,12 @@ func NewSynchronizer(config Config) *Synchronizer {
 }
 
 func (p *Synchronizer) Run() error {
-	MONGO_SYNC_OPTIME := os.Getenv("MONGO_SYNC_OPTIME")
-	if MONGO_SYNC_OPTIME == "" {
+	if p.config.StartOptime == -1 {
 		if err := p.initialSync(); err != nil {
 			return err
 		}
 	} else {
-		i, err := strconv.Atoi(MONGO_SYNC_OPTIME)
-		if err != nil {
-			panic(err)
-		}
-		p.optime = bson.MongoTimestamp(i)
+		p.optime = bson.MongoTimestamp(p.config.StartOptime)
 	}
 	if err := p.oplogSync(); err != nil {
 		return err
