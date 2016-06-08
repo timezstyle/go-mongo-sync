@@ -3,7 +3,6 @@ package sync
 import (
 	"fmt"
 	"hash/crc32"
-	"os"
 	"sync"
 	"time"
 
