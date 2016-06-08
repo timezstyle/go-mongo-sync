@@ -1,2 +1,3 @@
 go-mongo-sync
 *.bin
+.idea/
