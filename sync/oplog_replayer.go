@@ -10,8 +10,6 @@ import (
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"strings"
-	"strconv"
 )
 
 // oplog replay worker
@@ -25,26 +23,13 @@ type Worker struct {
 	nDone       uint64
 	id          int
 	config 	    Config
+	retryCodeList []int
 }
 
 func NewWorker(hostportstr string, id int, config Config) *Worker {
 	p := new(Worker)
 	p.config = config
-
-	var retryCodeList = []int{}
-	retryCodesStr := strings.Split(p.config.RetryCodes, ",")
-	for _, v := range retryCodesStr {
-		trimV := strings.TrimSpace(v)
-		if trimV == "" {
-			continue
-		}
-		i, err := strconv.Atoi(trimV)
-		if err != nil {
-			panic(err)
-		}
-		retryCodeList = append(retryCodeList, i)
-	}
-
+	p.retryCodeList = config.RetryCodeList
 	p.hostportstr = hostportstr
 	p.oplogChan = make(chan bson.M, 100)
 	s, err := mgo.Dial(p.hostportstr)
