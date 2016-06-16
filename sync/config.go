@@ -21,6 +21,7 @@ type Config struct {
 	SrcPort         int
 	DstHost         string
 	DstPort         int
+	Sleep		int
 }
 
 // load and parse command-line flags
@@ -30,6 +31,7 @@ func (p *Config) Load() error {
 	flag.StringVar(&p.Database, "db", "", "database to sync")
 	flag.IntVar(&p.GoroutineNumber, "c", 20, "goroutine number")
 	flag.IntVar(&p.StartOptime, "start_optime", -1, "start optime, -1 means no specify.")
+	flag.IntVar(&p.Sleep, "sleep", 100, "sleep ms, when move snapshot error!")
 	flag.Parse()
 	if err := p.validate(); err != nil {
 		return err

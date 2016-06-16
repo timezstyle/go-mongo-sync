@@ -159,12 +159,16 @@ func (p *Synchronizer) syncDatabase(dbname string) error {
 	return nil
 }
 
-func (p *Synchronizer) write_document(dbname string, collname string, doc bson.M, c chan bool) error {
-	// TODO failover
+func (p *Synchronizer) write_document(dbname string, collname string, doc bson.M, c chan bool) {
 	defer func() { <-c }()
+	p.try_write_document(dbname, collname, doc)
+}
+
+// when upsert error, sleep 100 ms and retry again.
+func (p *Synchronizer) try_write_document(dbname string, collname string, doc bson.M) {
 	if _, err := p.dstSession.Clone().DB(dbname).C(collname).UpsertId(doc["_id"], doc); err != nil {
 		fmt.Println("write document:", err)
-		return err
+		time.Sleep(time.Millisecond * time.Duration(p.config.Sleep))
+		p.try_write_document(dbname, collname, doc)
 	}
-	return nil
 }
