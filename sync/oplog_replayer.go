@@ -128,10 +128,10 @@ type OplogReplayer struct {
 	workers    [16]*Worker // TODO slice?
 }
 
-func NewOplogReplayer(src string, dst string, optime bson.MongoTimestamp, config Config) *OplogReplayer {
+func NewOplogReplayer(optime bson.MongoTimestamp, config Config) *OplogReplayer {
 	p := new(OplogReplayer)
-	p.src = src
-	p.dst = dst
+	p.src = config.From
+	p.dst = config.To
 	p.optime = optime
 	p.oplogChan = make(chan bson.M)
 	if s, err := mgo.Dial(p.src); err == nil {

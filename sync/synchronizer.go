@@ -84,7 +84,7 @@ func (p *Synchronizer) initialSync() error {
 
 func (p *Synchronizer) oplogSync() error {
 	// oplog replayer runs background
-	replayer := NewOplogReplayer(p.config.From, p.config.To, p.optime)
+	replayer := NewOplogReplayer(p.optime, p.config)
 	if replayer == nil {
 		return errors.New("NewOplogReplayer failed")
 	}
