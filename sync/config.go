@@ -22,6 +22,7 @@ type Config struct {
 	DstHost         string
 	DstPort         int
 	Sleep		int
+	RetryCodes	string
 }
 
 // load and parse command-line flags
@@ -32,6 +33,7 @@ func (p *Config) Load() error {
 	flag.IntVar(&p.GoroutineNumber, "c", 20, "goroutine number")
 	flag.IntVar(&p.StartOptime, "start_optime", -1, "start optime, -1 means no specify.")
 	flag.IntVar(&p.Sleep, "sleep", 100, "sleep ms, when move snapshot error!")
+	flag.StringVar(&p.RetryCodes, "retryCodes", "10058,", "oplog retry when meet retryCodes, use ',' to seperate error codes.")
 	flag.Parse()
 	if err := p.validate(); err != nil {
 		return err

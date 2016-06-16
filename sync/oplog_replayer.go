@@ -10,29 +10,9 @@ import (
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"flag"
 	"strings"
 	"strconv"
 )
-
-var oplogSleep = flag.Int("oplogSleep", 100, "oplog sleep ms, when replay oplog error.")
-var retryCodes = flag.String("retryCodes", "10058,", "oplog retry when meet retryCodes, use ',' to seperate error codes.")
-var retryCodeList = []int{}
-func init() {
-	flag.Parse()
-	retryCodesStr := strings.Split(*retryCodes, ",")
-	for _, v := range retryCodesStr {
-		trimV := strings.TrimSpace(v)
-		if trimV == "" {
-			continue
-		}
-		i, err := strconv.Atoi(trimV)
-		if err != nil {
-			panic(err)
-		}
-		retryCodeList = append(retryCodeList, i)
-	}
-}
 
 // oplog replay worker
 type Worker struct {
@@ -44,10 +24,27 @@ type Worker struct {
 	nOplog      uint64
 	nDone       uint64
 	id          int
+	config 	    Config
 }
 
-func NewWorker(hostportstr string, id int) *Worker {
+func NewWorker(hostportstr string, id int, config Config) *Worker {
 	p := new(Worker)
+	p.config = config
+
+	var retryCodeList = []int{}
+	retryCodesStr := strings.Split(p.config.RetryCodes, ",")
+	for _, v := range retryCodesStr {
+		trimV := strings.TrimSpace(v)
+		if trimV == "" {
+			continue
+		}
+		i, err := strconv.Atoi(trimV)
+		if err != nil {
+			panic(err)
+		}
+		retryCodeList = append(retryCodeList, i)
+	}
+
 	p.hostportstr = hostportstr
 	p.oplogChan = make(chan bson.M, 100)
 	s, err := mgo.Dial(p.hostportstr)
@@ -107,8 +104,8 @@ func (p *Worker) Run() error {
 			case *mgo.LastError:
 				errCode := err.(*mgo.LastError).Code
 				fmt.Println("LastError", errCode, err)
-				if  InSlice(errCode, retryCodeList)  {
-					time.Sleep(time.Millisecond * time.Duration(*oplogSleep))
+				if  InSlice(errCode, p.retryCodeList)  {
+					time.Sleep(time.Millisecond * time.Duration(p.config.Sleep))
 					goto Begin
 				}
 			default:
@@ -146,7 +143,7 @@ type OplogReplayer struct {
 	workers    [16]*Worker // TODO slice?
 }
 
-func NewOplogReplayer(src string, dst string, optime bson.MongoTimestamp) *OplogReplayer {
+func NewOplogReplayer(src string, dst string, optime bson.MongoTimestamp, config Config) *OplogReplayer {
 	p := new(OplogReplayer)
 	p.src = src
 	p.dst = dst
@@ -162,7 +159,7 @@ func NewOplogReplayer(src string, dst string, optime bson.MongoTimestamp) *Oplog
 		return nil
 	}
 	for i := 0; i < p.nWorkers; i++ {
-		worker := NewWorker(p.dst, i)
+		worker := NewWorker(p.dst, i, config)
 		if worker != nil {
 			p.workers[i] = worker
 			go worker.Run()
