@@ -10,7 +10,29 @@ import (
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"flag"
+	"strings"
+	"strconv"
 )
+
+var oplogSleep = flag.Int("oplogSleep", 100, "oplog sleep ms, when replay oplog error.")
+var retryCodes = flag.String("retryCodes", "10058,", "oplog retry when meet retryCodes, use ',' to seperate error codes.")
+var retryCodeList = []int{}
+func init() {
+	flag.Parse()
+	retryCodesStr := strings.Split(*retryCodes, ",")
+	for _, v := range retryCodesStr {
+		trimV := strings.TrimSpace(v)
+		if trimV == "" {
+			continue
+		}
+		i, err := strconv.Atoi(trimV)
+		if err != nil {
+			panic(err)
+		}
+		retryCodeList = append(retryCodeList, i)
+	}
+}
 
 // oplog replay worker
 type Worker struct {
@@ -64,16 +86,31 @@ func (p *Worker) Push(oplog bson.M) {
 	//}
 }
 
+
+func InSlice(i int, slice []int) bool {
+	for _, v := range slice {
+		if i == v {
+			return true
+		}
+	}
+	return false
+}
+
+
 // replay oplog
 func (p *Worker) Run() error {
 	for {
 		oplog := <-p.oplogChan
 	Begin:
 		if err := utils.ReplayOplog(p.session, oplog); err != nil {
-			// TODO
 			switch err.(type) {
 			case *mgo.LastError:
-				fmt.Println("LastError", err)
+				errCode := err.(*mgo.LastError).Code
+				fmt.Println("LastError", errCode, err)
+				if  InSlice(errCode, retryCodeList)  {
+					time.Sleep(time.Millisecond * time.Duration(*oplogSleep))
+					goto Begin
+				}
 			default:
 				switch err.Error() {
 				case "not found":
